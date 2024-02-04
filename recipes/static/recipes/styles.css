@@ -1,0 +1,64 @@
+body {
+    padding: 10px;
+    background-color: rgb(255, 255, 255);
+  
+    /* Add some margin and a border radius */
+
+    
+    /* Change the text color and font */
+    color: #333;
+    font-family: monospace;
+    font-size: 1em;
+}
+
+
+
+#search-form {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#search-form input[type="text"] {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+#search-form button[type="submit"] {
+    background-color: #007bff;
+    border: 1px solid #007bff;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#search-form button[type="submit"]:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.recipe-recipe {
+    font-style: italic;
+    margin: 10px 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.like_btn {
+    padding: 10px 15px;
+    background: #0080ff;
+    font-size: 18px;
+    font-family: 'Courier New', Courier, monospace;
+    border: none;
+    outline: white;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    
+}

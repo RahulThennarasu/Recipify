@@ -1,0 +1,118 @@
+{% extends "recipes/layout.html" %}
+
+{% block body %}
+
+<script>
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length == 2) return parts.pop().split(';').shift();
+  }
+
+  function updateContent() {
+    // make an AJAX request to the server
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/new-content');
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        // update the page with the new content
+        document.getElementById('content').innerHTML = xhr.responseText;
+      }
+    };
+    xhr.send();
+  }
+
+  function submitHandler(id) {
+    const textareaValue = document.getElementById(`textarea_${id}`).value;
+    const content = document.getElementById(`title_${id}`);
+    const modal = document.getElementById(`modal_edit_post_${id}`);
+    fetch(`/edit/${id}`, {
+      method: "POST",
+      headers: { "Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken") },
+      body: JSON.stringify({
+        content: textareaValue
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+          modal.classList.remove('show');
+        
+        if (modal && modal.setAttribute) {
+          modal.classList.remove('show');
+          modal.setAttribute('aria-hidden', 'true');
+          modal.setAttribute('style', 'display: none');
+        }
+
+        // get modal backdrops
+        const modalsBackdrops = document.getElementsByClassName('modal-backdrop');
+
+        // remove every modal backdrop
+        for (let i = 0; i < modalsBackdrops.length; i++) {
+          document.body.removeChild(modalsBackdrops[i]);
+        }
+
+        // update the content of the page with the new data from the server
+        updateContent();
+      })
+  }
+</script>
+
+<h2 class="mx-5">Amazing Recipes Available</h2>
+
+<form action="{% url 'index' %}" method="get" id="search-form">
+  <input type="text" name="q" placeholder="Enter a search term">
+  <button type="submit" class="btn btn-dark">Search</button>
+</form>
+
+<h2 id="search-result" class="mx-3 my-3">Results for "{{ query }}"</h2>
+
+<div class="row mx-3">
+    {% for listing in posts_of_the_page %}
+        <div class="card mx-3" style="width: 18rem;">
+            <img class="card-img-top" src="{{ listing.imageUrl }}" alt="{{ listing.title }}">
+            <div class="card-body">
+              <h5 class="title" id="title_{{ post.id }}">{{ listing.title }}</h5>
+              <p class="description">{{ listing.description }}</p>
+              {% if user.is_authenticated %}
+                <div class="d-flex justtify-content-around">
+                  <button class="btn btn-dark my-3" data-toggle="modal" data-target="#modal_edit_listing_{{ listing.id }}">Edit</button>
+                </div>
+                <div class="modal" id="modal_edit_listing_{{ listing.id }}" tabindex="-1" role="dialog" aria-labelledby="modal_edit_listing_{{ listing.id }}_label" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Edit Recipe Name</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <textarea rows="5" id="textarea_{{ listing.id }}" class="form-control" name="content">{{ listing.title }}</textarea>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="submitHandler('{{ listing.id }}')">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              <a href="{% url 'listing' id=listing.id %}" class="btn btn-light">Explore dish</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <nav aria-label="Page navigation example" class="my-3">
+        <ul class="pagination d-flex justify-content-center">
+          {% if posts_of_the_page.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ posts_of_the_page.previous_page_number }}">Previous</a></li>
+          {% endif %}
+          {% if posts_of_the_page.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ posts_of_the_page.next_page_number }}">Next</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+      
+{% endblock %}

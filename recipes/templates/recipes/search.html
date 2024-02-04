@@ -1,0 +1,20 @@
+{% extends "recipes/layout.html" %}
+
+{% block title %}
+Search | Encyclopedia
+{% endblock %}
+
+{% block body %}
+
+{% if entries_found %}
+<h2>Results for "{{ querySearch }}"</h2>
+<ul>
+    {% for entry in entries_found %}
+    <li><a href="{% url 'wiki' entry.id %}">{{ entry.title }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<h2>No entries found for "{{ querySearch }}"</h2>
+{% endif %}
+
+{% endblock %}
